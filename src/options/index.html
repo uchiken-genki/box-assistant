@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Box Assistant 設定</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <img src="../../icons/icon48.png" alt="" />
+        <div>
+          <h1>Box Assistant 設定</h1>
+          <p>Client ID / Secret と質問先 Hub は、このブラウザにだけ保存します。ソースコードや GitHub には含まれません。</p>
+        </div>
+      </header>
+
+      <section class="card">
+        <h2>1. リダイレクトURI</h2>
+        <p>Developer Console の OAuth 2.0 Redirect URI に、次の値をそのまま追加してください。</p>
+        <div class="copy-row">
+          <code id="redirect-uri"></code>
+          <button id="copy-redirect" type="button">コピー</button>
+        </div>
+        <p>CORS Domains には、次の値をそのまま追加してください。Box AI の POST はこのオリジンを送ります。</p>
+        <div class="copy-row">
+          <code id="cors-origin"></code>
+          <button id="copy-cors" type="button">コピー</button>
+        </div>
+        <p class="note">拡張機能ID: <code id="extension-id"></code></p>
+      </section>
+
+      <form id="settings-form" class="card">
+        <h2>2. アプリ資格情報</h2>
+        <p>一度保存すると、次回からは自動で読み込みます。</p>
+        <label>
+          Client ID
+          <input id="client-id" name="clientId" autocomplete="off" required />
+        </label>
+        <label>
+          Client Secret
+          <input id="client-secret" name="clientSecret" type="password" autocomplete="off" required />
+        </label>
+        <label>
+          検索対象フォルダID（任意）
+          <input id="ancestor-folder-id" name="ancestorFolderId" placeholder="未入力ならアクセス可能な全件" />
+        </label>
+        <h2>3. 質問する Hub</h2>
+        <p>ログイン後、サイドパネルの Hub タブで一覧から選ぶこともできます。ここでも ID を直接保存できます。</p>
+        <label>
+          Hub ID
+          <input id="hub-id" name="hubId" placeholder="例: 123456789" />
+        </label>
+        <label>
+          Hub 名（表示用・任意）
+          <input id="hub-title" name="hubTitle" placeholder="保存した Hub の名前" />
+        </label>
+        <button type="submit">保存</button>
+        <p id="save-status" class="status" hidden>保存しました。次回からこの値を使います。</p>
+      </form>
+
+      <section class="card">
+        <h2>4. 必要なスコープ</h2>
+        <ul>
+          <li>Read all files and folders stored in Box（<code>root_readonly</code>）</li>
+          <li>Manage AI（<code>ai.readwrite</code>）</li>
+        </ul>
+        <p>スコープを追加したら、Developer Console でアプリを再認可し、拡張機能側でいったん切断して再接続してください。</p>
+      </section>
+    </main>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

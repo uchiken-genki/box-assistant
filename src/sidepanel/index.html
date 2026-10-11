@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Box Assistant</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app" class="app">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-mark" src="../../icons/icon32.png" alt="" />
+          <div>
+            <div class="brand-name">Box Assistant</div>
+            <div id="status-line" class="brand-sub">パズルアイコンから開けます</div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button id="login-btn" class="ghost-btn" type="button">Boxに接続</button>
+          <button id="popout-btn" class="icon-btn" type="button" title="別ウィンドウで開く">⧉</button>
+          <button id="options-btn" class="icon-btn" type="button" title="設定">⚙</button>
+        </div>
+      </header>
+
+      <section id="setup-banner" class="banner hidden"></section>
+      <section id="folder-banner" class="folder-banner hidden"></section>
+
+      <section class="context-card">
+        <div class="context-label">選択中</div>
+        <div id="selection-text" class="selection-text">テキストを選択して右クリックすると、ここに表示されます。</div>
+        <div id="page-meta" class="page-meta"></div>
+      </section>
+
+      <nav class="tabs" role="tablist">
+        <button class="tab is-active" data-tab="ask" type="button">聞く</button>
+        <button class="tab" data-tab="search" type="button">検索</button>
+        <button class="tab" data-tab="related" type="button">関連資料</button>
+        <button class="tab" data-tab="meta" type="button">Metadata</button>
+        <button class="tab tab-wide" data-tab="hub" type="button">Hub</button>
+      </nav>
+
+      <main class="panels">
+        <section id="panel-ask" class="panel is-active" data-panel="ask">
+          <div id="ask-chips" class="chips"></div>
+          <form id="ask-form" class="ask-form">
+            <textarea id="ask-input" rows="3" placeholder="選択した内容について、Box AI に質問する"></textarea>
+            <button id="ask-submit" class="primary-btn" type="submit">Box AI</button>
+          </form>
+          <div id="ask-result" class="result-area"></div>
+        </section>
+
+        <section id="panel-search" class="panel" data-panel="search">
+          <form id="search-form" class="search-form">
+            <input id="search-input" type="search" placeholder="Box内を検索" />
+            <button class="primary-btn compact" type="submit">検索</button>
+          </form>
+          <div id="search-result" class="result-area"></div>
+        </section>
+
+        <section id="panel-related" class="panel" data-panel="related">
+          <p class="hint">今見ているページと選択テキストから、社内の関連資料を探します。</p>
+          <div id="related-result" class="result-area"></div>
+        </section>
+
+        <section id="panel-meta" class="panel" data-panel="meta">
+          <p class="hint">フォルダやファイルに付いている Metadata を、一覧で見やすく表示します。</p>
+          <div id="meta-result" class="result-area"></div>
+        </section>
+
+        <section id="panel-hub" class="panel" data-panel="hub">
+          <p class="hint">アクセスできる Box Hub から質問先を選んで保存します。保存した Hub は次回から自動で使います。</p>
+          <div class="hub-picker">
+            <select id="hub-select">
+              <option value="">ログインすると一覧を表示します</option>
+            </select>
+            <div class="hub-picker-actions">
+              <button id="hub-refresh" class="primary-btn compact" type="button">一覧を更新</button>
+              <button id="hub-save" class="primary-btn compact" type="button">このHubを保存</button>
+            </div>
+            <p id="hub-status" class="hint"></p>
+          </div>
+          <div id="hub-chips" class="chips"></div>
+          <form id="hub-form" class="ask-form">
+            <textarea id="hub-input" rows="3" placeholder="保存した Hub に聞きたいことを入力"></textarea>
+            <button id="hub-submit" class="primary-btn" type="submit">質問する</button>
+          </form>
+          <div id="hub-result" class="result-area"></div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
