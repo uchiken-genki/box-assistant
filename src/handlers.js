@@ -56,8 +56,6 @@ export async function handleMessage(message, sender) {
       return { ok: true, data: await runRelated(message.context) };
     case "FOLDER":
       return { ok: true, data: await runFolder(message.folderId) };
-    case "METADATA":
-      return { ok: true, data: await runMetadata(message.context) };
     case "POPOUT_PANEL":
       await openPopoutWindow();
       return { ok: true };
@@ -479,34 +477,4 @@ async function runFolder(folderId) {
     listFolderItems(token, folderId)
   ]);
   return { folder, items: items.entries, source: "box" };
-}
-
-async function runMetadata(context) {
-  const token = await requireBoxToken();
-  const targets = [];
-
-  if (context?.boxFolderId) {
-    const folder = await getFolder(token, context.boxFolderId);
-    const items = await listFolderItems(token, context.boxFolderId, { limit: 20 });
-    targets.push({ id: folder.id, type: "folder", name: folder.name });
-    for (const item of items.entries.slice(0, 12)) {
-      targets.push(item);
-    }
-  } else {
-    const search = await runSearch(extractSearchQuery(context), context);
-    targets.push(...search.entries.slice(0, 8));
-  }
-
-  const items = [];
-  for (const target of targets) {
-    const instances = await getItemMetadata(token, target);
-    items.push({
-      itemId: target.id,
-      itemName: target.name,
-      itemType: target.type,
-      url: target.url,
-      instances
-    });
-  }
-  return { items, source: "box" };
 }

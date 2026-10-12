@@ -23,7 +23,10 @@
         </div>
       </header>
 
-      <section id="setup-banner" class="banner hidden"></section>
+      <section id="setup-banner" class="banner">
+        <div>Boxに接続すると、選択テキストで社内資料を検索できます。</div>
+        <button type="button" class="primary-btn compact" data-action="connect">Boxに接続</button>
+      </section>
       <section id="folder-banner" class="folder-banner hidden"></section>
 
       <section class="context-card">
@@ -36,7 +39,6 @@
         <button class="tab is-active" data-tab="ask" type="button">聞く</button>
         <button class="tab" data-tab="search" type="button">検索</button>
         <button class="tab" data-tab="related" type="button">関連資料</button>
-        <button class="tab" data-tab="meta" type="button">Metadata</button>
         <button class="tab tab-wide" data-tab="hub" type="button">Hub</button>
       </nav>
 
@@ -61,11 +63,6 @@
         <section id="panel-related" class="panel" data-panel="related">
           <p class="hint">今見ているページと選択テキストから、社内の関連資料を探します。</p>
           <div id="related-result" class="result-area"></div>
-        </section>
-
-        <section id="panel-meta" class="panel" data-panel="meta">
-          <p class="hint">フォルダやファイルに付いている Metadata を、一覧で見やすく表示します。</p>
-          <div id="meta-result" class="result-area"></div>
         </section>
 
         <section id="panel-hub" class="panel" data-panel="hub">

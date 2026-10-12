@@ -1,4 +1,4 @@
-import { ASK_PROMPTS, FOLDER_PROMPTS, METADATA_LABELS } from "../lib/config.js";
+import { ASK_PROMPTS, FOLDER_PROMPTS } from "../lib/config.js";
 import { getAuthStatus, login, logout } from "../lib/auth.js";
 import { HUB_CHIPS } from "../lib/hub.js";
 
@@ -31,7 +31,6 @@ const els = {
   searchInput: document.getElementById("search-input"),
   searchResult: document.getElementById("search-result"),
   relatedResult: document.getElementById("related-result"),
-  metaResult: document.getElementById("meta-result"),
   hubSelect: document.getElementById("hub-select"),
   hubRefresh: document.getElementById("hub-refresh"),
   hubSave: document.getElementById("hub-save"),
@@ -190,23 +189,28 @@ async function refreshAuth() {
 
 function renderAuth() {
   const auth = state.auth || {};
-  if (!auth.configured) {
-    els.status.textContent = "Box未設定";
-    els.loginBtn.textContent = "設定を開く";
-    els.setupBanner.classList.remove("hidden");
-    els.setupBanner.innerHTML = "実際のBox検索を使うには、設定で Client ID / Secret を保存し、Boxに接続してください。サンプルのデモデータは使いません。";
-    return;
-  }
   if (auth.authenticated) {
     els.status.textContent = auth.user?.name ? `${auth.user.name} で接続中` : "Boxに接続済み";
     els.loginBtn.textContent = "切断";
     els.setupBanner.classList.add("hidden");
     return;
   }
-  els.status.textContent = "Box未接続";
   els.loginBtn.textContent = "Boxに接続";
   els.setupBanner.classList.remove("hidden");
-  els.setupBanner.innerHTML = "右上の「Boxに接続」でログインすると、選択テキストで社内のBoxを検索します。";
+  if (!auth.configured) {
+    els.status.textContent = "Box未設定";
+    els.setupBanner.innerHTML = `
+      <div>先に設定で Client ID / Secret を保存してください。保存後、下のボタンでBoxに接続できます。</div>
+      <button type="button" class="primary-btn compact" data-action="options">設定を開く</button>
+      <button type="button" class="primary-btn compact" data-action="connect">Boxに接続</button>
+    `;
+    return;
+  }
+  els.status.textContent = "Box未接続";
+  els.setupBanner.innerHTML = `
+    <div>Boxに接続すると、選択テキストで社内資料を検索できます。</div>
+    <button type="button" class="primary-btn compact" data-action="connect">Boxに接続</button>
+  `;
 }
 
 async function onLoginClick(event) {
@@ -386,16 +390,13 @@ async function refreshForContext() {
   if (!state.context) {
     els.searchResult.innerHTML = emptyHtml("Webページのテキストを選択するか、ツールバーから開いてください。");
     els.relatedResult.innerHTML = emptyHtml("ページを開いた状態で関連資料を探せます。");
-    els.metaResult.innerHTML = emptyHtml("Boxフォルダを開くか、選択テキストがあるとMetadataを表示します。");
     return;
   }
   if (state.context.selection || state.context.pageTitle) {
     await Promise.all([runSearch(state.context.selection || ""), runRelated()]);
   }
   if (state.context.boxFolderId) {
-    await Promise.all([loadFolder(), runMetadata()]);
-  } else {
-    els.metaResult.innerHTML = emptyHtml("Metadataタブを開くと、関連ファイルの属性を表示します。");
+    await loadFolder();
   }
 }
 
@@ -481,17 +482,6 @@ async function runRelated() {
   }
 }
 
-async function runMetadata() {
-  if (!ensureAuthenticated(els.metaResult)) return;
-  els.metaResult.innerHTML = loadingHtml("Metadataを読み込んでいます…");
-  try {
-    const res = await send({ type: "METADATA", context: state.context });
-    renderMetadata(res.data);
-  } catch (error) {
-    showAuthOrError(els.metaResult, error);
-  }
-}
-
 async function loadFolder() {
   try {
     const res = await send({ type: "FOLDER", folderId: state.context.boxFolderId });
@@ -536,35 +526,6 @@ function renderFiles(target, entries, source, heading) {
     <div class="source-tag">${escapeHtml(heading)} · ${sourceLabel(source)}</div>
     ${entries.map(fileCard).join("")}
   `;
-}
-
-function renderMetadata(data) {
-  if (!data?.items?.length) {
-    els.metaResult.innerHTML = emptyHtml("表示できるMetadataがありません。");
-    return;
-  }
-  els.metaResult.innerHTML = data.items.map((item) => {
-    if (!item.instances?.length) {
-      return `
-        <article class="meta-card">
-          <div class="meta-title">${escapeHtml(item.itemName)}</div>
-          <div class="meta-value">Metadata未設定</div>
-        </article>
-      `;
-    }
-    const rows = item.instances.flatMap((instance) =>
-      Object.entries(instance.fields).map(([key, value]) => `
-        <div class="meta-key">${escapeHtml(labelFor(key))}</div>
-        <div class="meta-value">${escapeHtml(formatMetaValue(value))}</div>
-      `)
-    ).join("");
-    return `
-      <article class="meta-card">
-        <div class="meta-title">${escapeHtml(item.itemName)}</div>
-        <div class="meta-grid">${rows}</div>
-      </article>
-    `;
-  }).join("");
 }
 
 function fileCard(item) {
@@ -645,9 +606,6 @@ function switchTab(tab) {
   document.querySelectorAll(".panel").forEach((el) => {
     el.classList.toggle("is-active", el.dataset.panel === tab);
   });
-  if (tab === "meta" && state.context) {
-    runMetadata();
-  }
   if (tab === "hub") {
     loadHubList();
   }
@@ -736,16 +694,6 @@ function iconFor(item) {
   if (["docx", "doc"].includes(ext)) return "📝";
   if (["xlsx", "xls", "csv"].includes(ext)) return "📈";
   return "📄";
-}
-
-function labelFor(key) {
-  return METADATA_LABELS[key] || key;
-}
-
-function formatMetaValue(value) {
-  if (Array.isArray(value)) return value.join(", ");
-  if (value && typeof value === "object") return JSON.stringify(value);
-  return String(value ?? "");
 }
 
 function formatDate(value) {

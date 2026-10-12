@@ -16,7 +16,6 @@ Webページでテキストを選択
 - 選択テキストで Box Search
 - 関連ファイルを根拠に Box AI（`POST /2.0/ai/ask`）へ質問
 - アクセスできる Box Hub を選んで保存し、Hub 全体へ質問（Box AI for Hubs）
-- フォルダ / ファイルの Metadata 表示
 - サイドパネルを別ウィンドウで開く
 
 ## インストール
@@ -71,7 +70,7 @@ src/
   content.js             選択テキストと Box フォルダID
   handlers.js            メッセージ処理
   lib/auth.js            OAuth 2.0（資格情報は chrome.storage.local）
-  lib/box-api.js         Search / Folder / Metadata / AI / Hubs
+  lib/box-api.js         Search / Folder / AI / Hubs
   lib/hub.js             Hub 質問用プロンプト
   sidepanel/             Side Panel UI
   options/               Client ID / Secret / Hub の保存
