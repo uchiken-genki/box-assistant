@@ -30,6 +30,13 @@ Webページでテキストを選択
 
 ショートカット: `Ctrl+Shift+Y`（Mac は `Command+Shift+Y`）
 
+## 動作確認環境
+
+次の環境で動作することを確認しています。
+
+- Windows 11
+- Google Chrome `155.0.8059.40`
+
 ## 初回設定
 
 1. [Box Developer Console](https://app.box.com/developers/console) で **Platform App**（OAuth 2.0）を作成する
